@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="EpiAtlas — 把世界各地的传染病报告与原始证据连接起来。">
+  <title>EpiAtlas · 传染病事件地图</title>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="./vendor/markercluster/MarkerCluster.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><img src="./icon.svg" alt="" width="35" height="35"><span>Epi<span class="brand-light">Atlas</span><small>传染病事件地图</small></span></a>
+    <nav aria-label="主导航"><span class="nav-current">全球观察</span><button id="method-button">数据与方法 <span>↗</span></button></nav>
+    <div class="snapshot"><i></i><span id="snapshot-label">正在读取报告…</span><span class="version">PREVIEW 0.1</span></div>
+  </header>
+  <main class="workspace">
+    <aside class="sidebar" aria-label="筛选条件">
+      <div class="eyebrow">EXPLORE THE EVIDENCE</div>
+      <h1>看见疫情，<br><span>也看见依据。</span></h1>
+      <p class="intro">从地图上的一个点，回到每一份原始报告。</p>
+      <label class="search-label" for="search">搜索疾病或地点</label>
+      <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="如：霍乱、Brazil" autocomplete="off"></div>
+      <div class="filter-group"><label for="disease">疾病 <span>DISEASE</span></label><select id="disease"><option value="">全部疾病</option></select></div>
+      <div class="filter-group"><label for="source">来源 <span>SOURCE</span></label><select id="source"><option value="">全部来源</option></select></div>
+      <div class="filter-group"><label for="scope">报告范围 <span>SCOPE</span></label><select id="scope"><option value="all">全部相关报告</option><option value="review">仅待核查事件</option></select></div>
+      <div class="filter-group"><label for="severity">严重性 <span>EXPERIMENTAL</span></label><select id="severity"><option value="">全部等级</option><option value="critical">高</option><option value="high">较高</option><option value="moderate">中等</option><option value="low">较低</option><option value="unknown">信息不足</option></select></div>
+      <button class="reset" id="reset">↺ 重置筛选</button>
+      <div class="source-health"><div class="eyebrow">SOURCE STATUS</div><div id="health"></div><p>显示最近一次采集状态。<br>未发现报告不代表没有疫情。</p></div>
+      <div class="sidebar-foot"><span class="tiny-orbit">◎</span><span>官方来源优先<br><small>所有自动提取均可回查</small></span></div>
+    </aside>
+    <section class="atlas" aria-label="疫情地图和时间筛选">
+      <div class="map-heading"><div><div class="eyebrow">GLOBAL OUTBREAK OBSERVATORY</div><h2>世界疫情观察</h2></div><button class="subtle" id="fit-world" title="回到全球视角">◎ 全球视角</button></div>
+      <div class="stats" aria-live="polite"><div><b id="stat-reports">—</b><span>来源报告</span></div><div><b id="stat-events">—</b><span>候选事件组</span></div><div><b id="stat-countries">—</b><span>涉及国家 / 地区</span></div><div><b id="stat-unmapped">—</b><span>待定位报告</span></div></div>
+      <div class="map-shell"><div id="map" aria-label="可缩放的世界传染病地图"></div><div class="map-caption"><span class="crosshair">＋</span> 选择地图上的点，查看关联报道</div><div class="map-legend"><div><span class="legend-dot low"></span>较低 <span class="legend-dot moderate"></span>中等 <span class="legend-dot high"></span>较高 <span class="legend-dot critical"></span>高 <span class="legend-dot unknown"></span>未知</div><small>点大小：报告病例数（对数） · 颜色：试验性严重分级</small></div><div class="map-overlay" id="map-empty" hidden>这段时间暂无可定位报告<br><small>调整筛选，或查看右侧未定位报道</small></div></div>
+      <section class="timeline" aria-label="报告时间筛选">
+        <div class="timeline-head"><div><span class="eyebrow">REPORT TIMELINE</span><h3>沿时间查看报告</h3></div><div class="presets"><button data-days="7">7 天</button><button data-days="30">30 天</button><button data-days="90">90 天</button><button data-days="all" class="active">全部</button></div></div>
+        <div class="histogram" id="histogram" aria-hidden="true"></div>
+        <div class="range-sliders"><label class="sr-only" for="range-start">开始日期滑块</label><input type="range" id="range-start" min="0" max="1000" value="0"><label class="sr-only" for="range-end">结束日期滑块</label><input type="range" id="range-end" min="0" max="1000" value="1000"></div>
+        <div class="date-controls"><label>从 <input type="date" id="date-start"></label><span>—</span><label>至 <input type="date" id="date-end"></label><button id="clear-dates">含日期未知</button></div>
+        <p id="date-note">按原始报告发布日期（UTC）筛选；不等同于发病日期。</p>
+      </section>
+    </section>
+    <aside class="feed-panel" aria-label="关联新闻与事件详情">
+      <div id="feed-view"><div class="feed-header"><div><div class="eyebrow">FROM THE SOURCE</div><h2>新闻与通报 <span id="feed-count">0</span></h2></div><button id="export" class="icon-button" title="导出当前筛选报告" aria-label="导出当前筛选报告">↓</button></div><div class="feed-subline"><span><i></i> 保留原始证据</span><span>按发布日期排序</span></div><div id="feed" aria-live="polite"><p class="empty">正在加载公开报告…</p></div></div>
+      <div id="detail-view" hidden></div>
+    </aside>
+  </main>
+  <footer class="footer"><span>EPiATLAS <span class="footer-divider">/</span> 独立研究原型 · 自动提取待核查</span><span id="last-update">数据读取中</span></footer>
+  <dialog id="method-dialog"><button class="dialog-close" id="close-method" aria-label="关闭方法说明">×</button><div class="eyebrow">TRANSPARENT BY DESIGN</div><h2>每个点，都有出处。</h2><p>本工具展示已发布的传染病相关报告，帮助查阅证据。报告数量不是感染人数；候选事件组也不等于已经核实的一次暴发。</p><h3>点与新闻怎样关联？</h3><p>按疾病、地点及相邻报告不超过 45 天组合候选事件。来源链接逐条保留，人数取组内最近一份有数值的报告，绝不累加不同文章中的累计数。地点是规则匹配结果，国家级点只是国家代表位置。</p><h3>颜色怎样计算？</h3><p>试验性分数 = min(45, log₁₀(病例+1)×11.25) + min(55, log₁₀(死亡+1)×18.33)。25、50、75 分是分级边界。未知项不加分，可能低估；缺少人数、事件结束或无法判断状态时显示灰色。这个分数未经流行病学验证，不表示个人感染风险。</p><p>第一版不自动计算病死率：病例和死亡必须先确认使用相同人群、时间和病例定义。后续可加入经过审核的评分及独立可信度指标。</p><h3>日期与更新</h3><p>筛选使用来源发布日期，采集时间单独记录。默认查看已有全部档案。7／30／90 天以当前 UTC 日期为基准。GitHub Actions 配置每 6 小时采集；本地页面仅显示最近一次数据快照，是否持续更新以仓库任务状态为准。</p><h3>开源致谢</h3><p>基于 <a href="https://github.com/DareDev256/pulsemap" target="_blank" rel="noopener noreferrer">PulseMap</a> 的地图标记缩放与时间轴思路，以及 <a href="https://github.com/acuestamd/project-geosentinel" target="_blank" rel="noopener noreferrer">GeoSentinel</a> 的新闻采集、文本判读及来源管理代码。地图使用 Leaflet 与 Natural Earth。</p><p><a href="./licenses/PulseMap-MIT.txt">PulseMap 许可证</a> · <a href="./licenses/GeoSentinel-MIT.txt">GeoSentinel 许可证</a></p></dialog>
+  <script src="./vendor/leaflet/leaflet.js"></script><script src="./vendor/markercluster/leaflet.markercluster.js"></script><script type="module" src="./app.mjs"></script>
+</body>
+</html>

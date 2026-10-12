@@ -1,0 +1,18 @@
+{
+  "name": "epiatlas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "An evidence-linked infectious disease atlas",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "leaflet": "1.9.4",
+    "leaflet.markercluster": "1.5.3",
+    "topojson-client": "3.1.0",
+    "world-atlas": "2.0.2"
+  }
+}
