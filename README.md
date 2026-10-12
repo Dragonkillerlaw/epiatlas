@@ -4,9 +4,9 @@
 
 ## 在线使用
 
-[打开 EpiAtlas 传染病事件地图](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site)
+[打开英文版 EpiAtlas](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site) · [打开中文版](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site/zh.html)
 
-网站已部署到 Sites，当前仅站点所有者可访问；如提示登录，请使用创建该站点的 ChatGPT 账号。无需下载代码或在本地启动服务器。
+网站已部署到 Sites。英文首页包含简明介绍、大字号和可展开的筛选侧边栏；中文旧版保留。当前仅站点所有者可访问；如提示登录，请使用创建该站点的 ChatGPT 账号。无需下载代码或在本地启动服务器。
 
 当前网站展示部署时的数据快照，最新采集时间显示在页面上。GitHub 的六小时采集会继续更新本仓库，但尚未与 Sites 自动同步；网站数据更新需要重新部署。
 
