@@ -1,3 +1,17 @@
+# EpiAtlas · Infectious Disease Map
+
+[Open the public map](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site) · [Chinese interface](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site/zh.html)
+
+EpiAtlas is an experimental map of infectious disease reports from public health sources. It connects map points with the report summaries, reported case and death counts when available, and links to the original publications. This prototype was built through AI-assisted “vibe coding”; its extraction and severity estimates need expert review.
+
+**How to use it:** Open the map, choose a time range in the panel at the bottom of the map, then select a circle. If a circle has a number, zoom in to separate the grouped points. The event details open on the right. Select **Read original source** to check the report. Select **× Close details** or click an empty part of the map to return to the full map. **☰ Filters** opens disease, location, source, and severity filters. A collapsed section below the map contains all reports, including those without a reliable map location.
+
+**Important limits:** Dates refer to when reports were published, not when infections began. Points are automatically grouped candidate events, not verified outbreak records. Missing case counts are shown as unknown; the color score is exploratory and does not represent personal infection risk. GitHub Actions collects new reports every six hours, while the hosted website displays the most recently published snapshot. Its last collection time is shown on the page.
+
+For data methods and reuse notices, see the Chinese documentation below and [third-party notices](THIRD_PARTY_NOTICES.md). The source code is MIT-licensed; external reports and map data retain their own terms.
+
+---
+
 # EpiAtlas · 传染病事件地图
 
 把地图上的传染病事件与原始新闻证据连接起来。第一版结合 PulseMap 的地图交互思路，以及 GeoSentinel 的公开报告采集、文本判读与来源管理代码。
@@ -6,7 +20,7 @@
 
 [打开英文版 EpiAtlas](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site) · [打开中文版](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site/zh.html)
 
-网站已部署到 Sites。英文首页包含简明介绍、大字号和可展开的筛选侧边栏；中文旧版保留。当前仅站点所有者可访问；如提示登录，请使用创建该站点的 ChatGPT 账号。无需下载代码或在本地启动服务器。
+网站已部署到 Sites。英文首页包含简明介绍、大字号和可展开的筛选侧边栏；中文旧版保留。网站与代码仓库已公开，无需登录、下载代码或在本地启动服务器。
 
 当前网站展示部署时的数据快照，最新采集时间显示在页面上。GitHub 的六小时采集会继续更新本仓库，但尚未与 Sites 自动同步；网站数据更新需要重新部署。
 
@@ -53,7 +67,7 @@ Windows 自动使用 PowerShell 的网络栈，Linux 使用 Python 标准库。�
 
 ## 自动更新与隐私
 
-仓库保持私有，工作流不会自动发布网站。CI 的 `epiatlas-preview` 构建产物也在仓库权限内。GitHub Actions 定时任务可能延迟或受账户额度限制，以 Actions 的实际运行结果为准。
+仓库公开，工作流不会自动发布网站。CI 的 `epiatlas-preview` 构建产物会遵循仓库权限。GitHub Actions 定时任务可能延迟或受账户额度限制，以 Actions 的实际运行结果为准。
 
 `Collect official reports` 支持手动运行。若所有来源失败，旧报告保留、来源失败状态写入，任务会明确失败。定时提交使用 `GITHUB_TOKEN`，这种提交不会再次触发另一个 push 工作流；需要最新前端构建时手动运行 `Check and build` 或本地重新构建。
 
@@ -69,7 +83,7 @@ pnpm build
 
 | 路径 | 用途 |
 | --- | --- |
-| `web/` | 中文界面、地图、筛选及候选事件聚合 |
+| `web/` | 英文／中文界面、地图、筛选及候选事件聚合 |
 | `scripts/collect.py` | WHO / PAHO 适配、采集与持久化 |
 | `data/reports.json` | 可追溯的报告快照与历史 |
 | `vendor/geosentinel/` | 保留的上游 MIT 代码 |
