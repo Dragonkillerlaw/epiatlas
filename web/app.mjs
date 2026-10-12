@@ -11,6 +11,7 @@ const e=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.classNam
 function link(url,text,cls='article-link') {const safe=safeUrl(url);const el=e(safe?'a':'span',cls,text);if(safe){el.href=safe;el.target='_blank';el.rel='noopener noreferrer';}return el;}
 let map,markerLayer,markers=new Map(),minTime=0,maxTime=0;
 function setFiltersOpen(open,focus=false){
+  if(open)closeDetail();
   $('filters-panel').hidden=!open;
   $('workspace').classList.toggle('sidebar-closed',!open);
   $('open-filters').setAttribute('aria-expanded',String(open));
@@ -23,12 +24,12 @@ function setFiltersOpen(open,focus=false){
 $('open-filters').addEventListener('click',()=>setFiltersOpen($('filters-panel').hidden,true));
 $('header-filters').addEventListener('click',()=>setFiltersOpen($('filters-panel').hidden,true));
 $('close-filters').addEventListener('click',()=>setFiltersOpen(false,true));
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('filters-panel').hidden&&$('method-dialog').open===false)setFiltersOpen(false,true);});
+document.addEventListener('keydown',event=>{if(event.key!=='Escape'||$('method-dialog').open)return;if(!$('filters-panel').hidden)setFiltersOpen(false,true);else if(!$('event-panel').hidden)closeDetail();});
 
 function initMap(countries) {
   map=L.map('map',{zoomControl:false,minZoom:1,maxZoom:7,worldCopyJump:false,maxBounds:[[-84,-220],[84,220]],maxBoundsViscosity:.7});
   map.fitBounds([[-55,-155],[73,170]],{padding:[20,30]});
-  L.control.zoom({position:'bottomright'}).addTo(map);
+  L.control.zoom({position:'topright'}).addTo(map);
   map.attributionControl.setPrefix(false);
   map.attributionControl.addAttribution('Leaflet · Natural Earth');
   const graticule=[];
@@ -38,7 +39,8 @@ function initMap(countries) {
   L.geoJSON(countries,{style:{color:'#33505e',weight:.6,fillColor:'#192e3a',fillOpacity:1},onEachFeature:(feature,layer)=>{layer.bindTooltip(feature.properties.name,{sticky:true,className:'map-tooltip'});}}).addTo(map);
   markerLayer=L.markerClusterGroup({maxClusterRadius:35,showCoverageOnHover:false,spiderfyOnMaxZoom:true,
     iconCreateFunction:cluster=>L.divIcon({html:`<span>${cluster.getChildCount()}</span>`,className:'event-cluster',iconSize:[34,34]})}).addTo(map);
-  $('fit-world').onclick=()=>map.fitBounds([[-55,-155],[73,170]],{padding:[20,30]});
+  $('fit-world').onclick=()=>{closeDetail();map.fitBounds([[-55,-155],[73,170]],{padding:[20,30]});};
+  map.on('click',()=>closeDetail());
   new ResizeObserver(()=>map.invalidateSize()).observe($('map'));
 }
 
@@ -53,7 +55,7 @@ function renderMap() {
     const marker=L.marker([ev.location.lat,ev.location.lng],{icon:L.divIcon({html:icon,className:`atlas-marker ${ev.latest.triage==='context'?'context':''}`,iconSize:[size,size],iconAnchor:[size/2-dx,size/2-dy]}),keyboard:true,title:`${diseaseName(ev.disease)} · ${ev.location.name} · ${ev.reports.length} reports`});
     const tip=e('div');tip.append(e('strong','',`${diseaseName(ev.disease)} · ${ev.location.name}`),e('p','',`${ev.reports.length} linked reports · Cases: ${count(ev.countReport?.cases)}`),e('p','',ev.latest.summary.slice(0,150)+'…'),e('p','',`${sourceName(ev.latest.source)} · ${dateText(ev.latest.publishedAt)} · Select for sources`));
     marker.bindTooltip(tip,{className:'map-tooltip',direction:'top',offset:[dx,dy-size/2]});
-    marker.on('click',()=>showEvent(ev.id));marker.addTo(markerLayer);markers.set(ev.id,marker);
+    marker.on('click',event=>{L.DomEvent.stopPropagation(event.originalEvent);showEvent(ev.id);});marker.addTo(markerLayer);markers.set(ev.id,marker);
   }
   $('map-empty').hidden=located.length>0;
 }
@@ -75,8 +77,9 @@ function renderFeed() {
 
 function showEvent(id,fly=false) {
   const ev=state.events.find(x=>x.id===id);if(!ev)return;
-  state.selected=id;$('feed-view').hidden=true;$('detail-view').hidden=false;
-  const top=e('div','detail-top');const back=e('button','','← Back to reports');back.onclick=closeDetail;top.append(back,e('span','','EVIDENCE DETAIL'));
+  if(!$('filters-panel').hidden)setFiltersOpen(false);
+  state.selected=id;$('event-panel').hidden=false;$('detail-view').hidden=false;
+  const top=e('div','detail-top');const back=e('button','','× Close details');back.onclick=closeDetail;top.append(back,e('span','','EVIDENCE DETAIL'));
   const body=e('div','detail-scroll');body.append(e('div','eyebrow','Possible event · Automated extraction needs review'),e('h2','',diseaseName(ev.disease)),e('div','detail-place',`◎ ${ev.location?.name||'Location unverified'}${ev.location?.country&&ev.location.country!==ev.location.name?' / '+ev.location.country:''}`));
   const sev=e('span','severity-tag',`Severity: ${severityLabels[ev.severity.level]}${ev.severity.score!==null?' · '+ev.severity.score+'/100':''}`);sev.style.setProperty('--sev',colors[ev.severity.level]);body.append(sev);
   const metrics=e('div','metrics');for(const [label,n] of [['Reported cases',ev.countReport?.cases],['Reported deaths',ev.countReport?.deaths]]){const metric=e('div');metric.append(e('strong','',count(n)),e('span','',label));metrics.append(metric);}body.append(metrics);
@@ -95,10 +98,11 @@ function showEvent(id,fly=false) {
   $('detail-view').replaceChildren(top,body);
   for(const [key,m]of markers)m.getElement()?.classList.toggle('selected',key===id);
   if(fly&&ev.location&&map)map.flyTo([ev.location.lat,ev.location.lng],Math.max(map.getZoom(),3),{duration:.6});
-  if(window.innerWidth<900)$('detail-view').scrollIntoView({behavior:'smooth',block:'start'});
+  if(fly)$('workspace').scrollIntoView({behavior:'smooth',block:'start'});
+  if(window.innerWidth<760)$('detail-view').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function closeDetail(){state.selected=null;$('detail-view').hidden=true;$('feed-view').hidden=false;for(const m of markers.values())m.getElement()?.classList.remove('selected');}
+function closeDetail(){state.selected=null;$('detail-view').hidden=true;$('event-panel').hidden=true;for(const m of markers.values())m.getElement()?.classList.remove('selected');}
 function update(){
   state.filtered=filterReports(state.data.reports,state.filters);state.events=groupEvents(state.filtered);
   $('stat-reports').textContent=state.filtered.length;$('stat-events').textContent=state.events.length;
