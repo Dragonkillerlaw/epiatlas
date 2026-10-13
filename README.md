@@ -67,9 +67,9 @@ Windows 自动使用 PowerShell 的网络栈，Linux 使用 Python 标准库。�
 
 ## 自动更新与隐私
 
-仓库公开，工作流不会自动发布网站。CI 的 `epiatlas-preview` 构建产物会遵循仓库权限。GitHub Actions 定时任务可能延迟或受账户额度限制，以 Actions 的实际运行结果为准。
+仓库公开，GitHub Pages 工作流会在相关文件推送或定时运行时自动构建并发布网站。CI 的 `epiatlas-preview` 构建产物会遵循仓库权限。GitHub Actions 定时任务可能延迟或受账户额度限制，以 Actions 的实际运行结果为准。
 
-`Collect official reports` 支持手动运行。若所有来源失败，旧报告保留、来源失败状态写入，任务会明确失败。定时提交使用 `GITHUB_TOKEN`，这种提交不会再次触发另一个 push 工作流；需要最新前端构建时手动运行 `Check and build` 或本地重新构建。
+`Collect official reports` 支持手动运行。若所有来源失败，旧报告保留、来源失败状态写入，任务会明确失败。定时提交使用 `GITHUB_TOKEN`，这种提交不会再次触发另一个 push 工作流；独立的 Pages 定时任务会在下次运行时发布最新数据。需要立即发布时可手动运行 `Publish EpiAtlas on GitHub Pages`。
 
 ## 测试
 
@@ -88,7 +88,7 @@ pnpm build
 | `data/reports.json` | 可追溯的报告快照与历史 |
 | `vendor/geosentinel/` | 保留的上游 MIT 代码 |
 | `licenses/` | 上游许可全文 |
-| `.github/workflows/` | 自动采集与构建检查 |
+| `.github/workflows/` | 自动采集、构建检查与 GitHub Pages 发布 |
 
 ## 后续方向
 
@@ -97,7 +97,7 @@ pnpm build
 - 稳定事件 ID、跨来源报告关联与审核记录。
 - 更完整的地点词典和多语种摘要。
 - 专家审核的严重性模型，与来源可信度独立显示。
-- 将 GitHub 定时采集与私有网站的数据同步接通。
+- 更清晰地展示定时采集和网站发布的运行状态。
 
 ## 复用与致谢
 
