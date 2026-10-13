@@ -1,12 +1,12 @@
 # EpiAtlas · Infectious Disease Map
 
-[Open the public map](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site) · [Chinese interface](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site/zh.html)
+[Open the public map](https://dragonkillerlaw.github.io/epiatlas) · [Chinese interface](https://dragonkillerlaw.github.io/epiatlas/zh.html)
 
 EpiAtlas is an experimental map of infectious disease reports from public health sources. It connects map points with the report summaries, reported case and death counts when available, and links to the original publications. This prototype was built through AI-assisted “vibe coding”; its extraction and severity estimates need expert review.
 
 **How to use it:** Open the map, choose a time range in the panel at the bottom of the map, then select a circle. If a circle has a number, zoom in to separate the grouped points. The event details open on the right. Select **Read original source** to check the report. Select **× Close details** or click an empty part of the map to return to the full map. **☰ Filters** opens disease, location, source, and severity filters. A collapsed section below the map contains all reports, including those without a reliable map location.
 
-**Important limits:** Dates refer to when reports were published, not when infections began. Points are automatically grouped candidate events, not verified outbreak records. Missing case counts are shown as unknown; the color score is exploratory and does not represent personal infection risk. GitHub Actions collects new reports every six hours, while the hosted website displays the most recently published snapshot. Its last collection time is shown on the page.
+**Important limits:** Dates refer to when reports were published, not when infections began. Points are automatically grouped candidate events, not verified outbreak records. Missing case counts are shown as unknown; the color score is exploratory and does not represent personal infection risk. GitHub Actions collects new reports every six hours. A separate GitHub Pages workflow rebuilds and publishes the latest snapshot on a similar schedule. Its last collection time is shown on the page; scheduled runs can be delayed.
 
 For data methods and reuse notices, see the Chinese documentation below and [third-party notices](THIRD_PARTY_NOTICES.md). The source code is MIT-licensed; external reports and map data retain their own terms.
 
@@ -18,11 +18,11 @@ For data methods and reuse notices, see the Chinese documentation below and [thi
 
 ## 在线使用
 
-[打开英文版 EpiAtlas](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site) · [打开中文版](https://epiatlas-dragonkillerlaw.citrusjay16.chatgpt.site/zh.html)
+[打开英文版 EpiAtlas](https://dragonkillerlaw.github.io/epiatlas) · [打开中文版](https://dragonkillerlaw.github.io/epiatlas/zh.html)
 
-网站已部署到 Sites。英文首页包含简明介绍、大字号和可展开的筛选侧边栏；中文旧版保留。网站与代码仓库已公开，无需登录、下载代码或在本地启动服务器。
+网站已通过 GitHub Pages 发布。英文首页包含简明介绍、大字号和可展开的筛选侧边栏；中文旧版保留。网站与代码仓库已公开，无需登录、下载代码或在本地启动服务器。
 
-当前网站展示部署时的数据快照，最新采集时间显示在页面上。GitHub 的六小时采集会继续更新本仓库，但尚未与 Sites 自动同步；网站数据更新需要重新部署。
+当前网站展示最近一次发布的数据快照，最新采集时间显示在页面上。GitHub 每六小时尝试采集，并按计划重新构建发布网站；定时运行可能延迟，以页面显示的时间为准。
 
 ## 运行
 
